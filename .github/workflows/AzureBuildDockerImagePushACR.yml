@@ -23,16 +23,3 @@ jobs:
         docker image build --pull --file './Dockerfile' --tag 'fileserverservice:latest' --label 'com.microsoft.created-by=visual-studio-code' --platform 'linux/amd64' './'
         docker tag fileserverservice rbcs399registry.azurecr.io/fileserverservice:latest
     - run: docker push rbcs399registry.azurecr.io/fileserverservice:latest
-
-  build_and_push_container:
-      runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-            steps:
-    - uses: azure/docker-login@v1
-      with:
-        login-server: rbcs399registry.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-    - run: az containerapp revision restart -n filesystemapp -g CS399 --revision filesystemapp--9rg1n05
