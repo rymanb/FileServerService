@@ -1,0 +1,22 @@
+name: Build Linux Container Image and Push to ACR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: dotnet
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/docker-login@v1
+      with:
+        login-server: rbcs399registry.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - run: |
+        docker build --file Dockerfile --tag rbcs399registry.azurecr.io/fileserverservice:latest .
+        docker push rbcs399registry.azurecr.io/fileserverservice:latest
