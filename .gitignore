@@ -1,0 +1,7 @@
+# ignore all Identifier files
+*.Identifier
+
+.vscode/
+bin/
+obj/
+
