@@ -2,6 +2,11 @@ name: Build Linux Container Image and Push to ACR
 
 on:
   workflow_dispatch:
+    inputs:
+      build: 
+        description: 'Build the Docker image and push to ACR'
+        required: true
+        default: 'true'
 
 jobs:
   build:
@@ -11,12 +16,19 @@ jobs:
         shell: bash
     steps:
     - uses: actions/checkout@v2
+    - run: |
+        docker image build --pull --file './Dockerfile' --tag 'fileserverservice:latest' --label 'com.microsoft.created-by=visual-studio-code' --platform 'linux/amd64' './'
+        docker tag fileserverservice rbcs399registry.azurecr.io/fileserverservice:latest
+
+  push_to_azure:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
     - uses: azure/docker-login@v1
       with:
         login-server: rbcs399registry.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker image build --pull --file './Dockerfile' --tag 'fileserverservice:latest' --label 'com.microsoft.created-by=visual-studio-code' --platform 'linux/amd64' './'
-        docker tag fileserverservice rbcs399registry.azurecr.io/fileserverservice:latest
         docker push rbcs399registry.azurecr.io/fileserverservice:latest
+
