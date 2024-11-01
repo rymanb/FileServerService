@@ -109,7 +109,8 @@ public class FileServerHandlers
 
 
                 HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("https://userdatabaseinterface.wonderfulsky-750ba161.westus2.azurecontainerapps.io");
+                string user_database_service_url = _configuration["AzureFileServer:UserDatabaseServiceUrl"];
+                client.BaseAddress = new Uri(user_database_service_url);
 
                 // HTTP GET
                 HttpResponseMessage response = await client.PostAsync("api/user", content);
