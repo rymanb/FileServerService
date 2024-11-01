@@ -99,20 +99,25 @@ public class FileServerHandlers
                     user_email = "test@gmail.com";
                 }
 
-                string userdbserviceurl = "https://userdatabaseinterface.wonderfulsky-750ba161.westus2.azurecontainerapps.io/api/user";
-
-                UserMetadata userMetadata = new UserMetadata();
-                userMetadata.email = user_email;
-                userMetadata.userid = user_email.Split('@')[0];
+                 UserMetadata userMetadata = new UserMetadata();
+                 userMetadata.email = user_email;
+                 userMetadata.userid = user_email.Split('@')[0];
 
                 // send user metadata to user database service
+                 var json = JsonSerializer.Serialize(userMetadata);
+                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+
                 HttpClient client = new HttpClient();
-                var content = new StringContent(JsonSerializer.Serialize(userMetadata), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(userdbserviceurl, content);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Failed to send user metadata to user database service: {response.ReasonPhrase}");
-                }
+                client.BaseAddress = new Uri("https://userdatabaseinterface.wonderfulsky-750ba161.westus2.azurecontainerapps.io");
+
+                // HTTP GET
+                HttpResponseMessage response = await client.PostAsync("api/user", content);
+
+                // make sure the call was successful
+                response.EnsureSuccessStatusCode();
+
+
 
                 // get user name from email
                 string user = user_email.Split('@')[0];

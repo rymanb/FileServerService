@@ -24,7 +24,8 @@ class Program
 
     static void Main(String[] args)
     {
-         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
 
         // Instead of hardcoding the values for various strings, we are going to put them into
         // a configuration file to make it easier to read. This is especially useful when you
