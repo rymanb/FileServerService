@@ -87,69 +87,6 @@ public class FileServerHandlers
         }
     }
 
-    public async Task HomeDelegate(HttpContext context)
-    {
-        using(var log = _logger.StartMethod(nameof(UploadFileDelegate), context))
-        {
-            try
-            {
-                string user_email = context.Request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
-                if (string.IsNullOrEmpty(user_email))
-                {
-                    user_email = "test@gmail.com";
-                }
-
-                 UserMetadata userMetadata = new UserMetadata();
-                 userMetadata.email = user_email;
-                 userMetadata.userid = user_email.Split('@')[0];
-
-                // send user metadata to user database service
-                 var json = JsonSerializer.Serialize(userMetadata);
-                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-
-                HttpClient client = new HttpClient();
-                string user_database_service_url = _configuration["AzureFileServer:UserDatabaseServiceUrl"];
-                client.BaseAddress = new Uri("https://userdatabaseinterface.internal.wonderfulsky-750ba161.westus2.azurecontainerapps.io/");
-
-                // HTTP GET
-                HttpResponseMessage response = await client.PostAsync("api/user", content);
-
-                // make sure the call was successful
-                response.EnsureSuccessStatusCode();
-
-
-
-                // get user name from email
-                string user = user_email.Split('@')[0];
-                // create web page with user name at top, a logout button, and a list of files
-                StringBuilder html = new StringBuilder();
-
-
-                // get metadata from CosmosDB
-                IEnumerable<FileMetadata> metadata = await GetMetadataFromCosmosDb(user);
-
-                // build home page
-                HTMLPageController htmlController = new HTMLPageController();
-                htmlController.BuildHomePage(html, metadata, user);
-
-                // return web page to caller
-                await context.Response.WriteAsync(html.ToString());
-
-            }
-            catch (UserErrorException e)
-            {
-                log.LogUserError(e.Message);
-            }
-            catch(Exception e)
-            {
-                log.HandleException(e);
-            }
-        }
-    }
-
-
-
     public async Task UploadFileDelegate(HttpContext context)
     {
         using(var log = _logger.StartMethod(nameof(UploadFileDelegate), context))
@@ -165,8 +102,7 @@ public class FileServerHandlers
                 }
 
                 FileMetadata m = new FileMetadata();
-                string user_email = request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
-                m.userid = user_email.Split('@')[0];
+                m.userid = GetParameterFromList("userid", request, log);
                 m.filename = fileContent.FileName;
                 m.contenttype = fileContent.ContentType;
                 m.contentlength = fileContent.Length;                
@@ -221,8 +157,7 @@ public class FileServerHandlers
                 HttpRequest request = context.Request;
 
                 FileMetadata m = new FileMetadata();
-                string user_email = request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
-                m.userid = user_email.Split('@')[0];
+                m.userid = GetParameterFromList("userid", request, log);
                 m.filename = GetParameterFromList("filename", request, log);
 
                 // Implement the download file delegate to return the file
@@ -278,9 +213,6 @@ public class FileServerHandlers
             {
                 HttpRequest request = context.Request;
 
-                //string user_email = request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
-                //string userid = user_email.Split('@')[0];
-
                 // get userid parameter from request
                 string userid = GetParameterFromList("userid", request, log);
 
@@ -312,8 +244,7 @@ public class FileServerHandlers
                 HttpRequest request = context.Request;
 
                 FileMetadata m = new FileMetadata();
-                string user_email = request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
-                m.userid = user_email.Split('@')[0];
+                m.userid = GetParameterFromList("userid", request, log);
                 m.filename = GetParameterFromList("filename", request, log);
 
                 // Implement the delete file delegate to remove the file
