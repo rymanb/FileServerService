@@ -264,8 +264,6 @@ public class FileServerHandlers
                 // delete metadata from CosmosDB
                 await _cosmosDbWrapper.DeleteItemAsync(m.id, m.userid);
 
-                // redirect to home page
-                context.Response.Redirect("/");
             }
             catch(Exception e)
             {
