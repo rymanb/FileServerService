@@ -278,8 +278,11 @@ public class FileServerHandlers
             {
                 HttpRequest request = context.Request;
 
-                string user_email = request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
-                string userid = user_email.Split('@')[0];
+                //string user_email = request.Headers["X-MS-CLIENT-PRINCIPAL-NAME"];
+                //string userid = user_email.Split('@')[0];
+
+                // get userid parameter from request
+                string userid = GetParameterFromList("userid", request, log);
 
                 // Implement the list files delegate to return a list of files
                 // that are associated with the userId provided in the HTTP request.

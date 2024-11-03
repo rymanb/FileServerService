@@ -53,7 +53,7 @@ class Program
 
         WebApplication app = builder.Build();
 
-        app.MapGet("/", instance.HomeDelegate);
+        //app.MapGet("/", instance.HomeDelegate);
 
         app.MapGet("/healthcheck", instance.HealthCheckDelegate);
         app.MapGet("/download", instance.DownloadFileDelegate);
