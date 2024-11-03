@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http.Extensions;
+using System.Text.RegularExpressions;
 
 using AzureFileServer.HTML;
 
@@ -104,6 +105,9 @@ public class FileServerHandlers
                 FileMetadata m = new FileMetadata();
                 m.userid = GetParameterFromList("userid", request, log);
                 m.filename = fileContent.FileName;
+                // replace any non a-z, A-Z, 0-9 or _ with nothing
+                m.filename = Regex.Replace(m.filename, "[^a-zA-Z0-9_]", "");
+
                 m.contenttype = fileContent.ContentType;
                 m.contentlength = fileContent.Length;                
 
