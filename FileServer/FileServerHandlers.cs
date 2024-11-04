@@ -137,9 +137,6 @@ public class FileServerHandlers
 
                 // The POST has no response body, so we just return and the system
                 // will return a 200 OK to the caller.
-
-                // redirect to home page
-                context.Response.Redirect("/");
             }
             catch (UserErrorException e)
             {
@@ -197,8 +194,6 @@ public class FileServerHandlers
                 fileStream.Position = 0;
                 await fileStream.CopyToAsync(context.Response.Body);
 
-                // redirect to home page
-                context.Response.Redirect("/");
 
 
             }
