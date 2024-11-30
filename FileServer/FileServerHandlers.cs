@@ -9,8 +9,6 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Text.RegularExpressions;
 
-using AzureFileServer.HTML;
-
 namespace AzureFileServer.FileServer;
 
 
@@ -96,6 +94,7 @@ public class FileServerHandlers
             {
                 HttpRequest request = context.Request;
 
+                // make sure we have a file content
                 IFormFile fileContent = context.Request.Form.Files.FirstOrDefault();
                 if (fileContent == null)
                 {
@@ -161,10 +160,6 @@ public class FileServerHandlers
                 m.userid = GetParameterFromList("userid", request, log);
                 m.filename = GetParameterFromList("filename", request, log);
 
-                // Implement the download file delegate to return the file
-                // contents to the caller via the HTTP response after receiving both
-                // the userId and the filename to find.
-
                 // get metadata from CosmosDB
                 FileMetadata metadata = await _cosmosDbWrapper.GetItemAsync<FileMetadata>(m.id, m.userid);
                 if (metadata == null)
@@ -214,9 +209,6 @@ public class FileServerHandlers
 
                 // get userid parameter from request
                 string userid = GetParameterFromList("userid", request, log);
-
-                // Implement the list files delegate to return a list of files
-                // that are associated with the userId provided in the HTTP request.
 
                 // get metadata from CosmosDB
                 IEnumerable<FileMetadata> metadata = await GetMetadataFromCosmosDb(userid);

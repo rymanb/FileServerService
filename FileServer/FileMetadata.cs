@@ -1,6 +1,6 @@
 namespace AzureFileServer.FileServer;
 
-// This class is used to store metadata about a file and can be
+// This class is used to store metadata about a user and can be
 // used for serializing and deserialzing the JSON data in CosmosDb
 public class FileMetadata
 {
